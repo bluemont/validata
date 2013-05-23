@@ -1,4 +1,86 @@
 validata
 ========
 
-Simple data validation for Clojure.
+Validata is a Clojure library to validates maps. Its goals are:
+
+  * provide a simple, idiomatic Clojure API
+  * avoid using macros for the API
+  * validate data, not transform or coerce it
+  * make validation functions easy to compose
+  * make validation functions easy to extend
+  * use simple, easy-to-understand internals
+
+There are many alternatives for validation in Clojure; I list some alternatives below. My goal is to make validata clean and simple relative to some of the other options.
+
+
+Usage
+-----
+
+```clojure
+(ns example.core
+  (:require [validata.core :as v]))
+
+(def validations
+  {:uuid        [v/uuid-string v/required]
+   :name        [v/string v/required]
+   :notes       [v/string]
+   :created-at  [v/timestamp-string]
+   :updated-at  [v/timestamp-string]})
+
+(v/errors {} validations)
+; {:uuid ["key is required"], :name ["key is required"]}
+
+(v/errors {:uuid "e0da523c-fdfc-46d5-bf6d-a895dd3235c1"} validations)
+; {:name ["key is required"]}
+
+(v/errors {:uuid "e0da523c-fdfc-46d5-bf6d-a895dd3235c1"
+           :name "validata"
+           :notes 2.7128} validations)
+; {:notes ["value must be a string"]}
+
+(v/errors {:uuid "e0da523c-fdfc-46d5-bf6d-a895dd3235c1"
+           :name "validata"} validations)
+; {}
+
+(v/valid? {:uuid "e0da523c-fdfc-46d5-bf6d-a895dd3235c1"} validations)
+; false
+
+(v/valid? {:uuid "e0da523c-fdfc-46d5-bf6d-a895dd3235c1"
+           :name "validata"} validations)
+; true
+```
+
+
+Limitations
+-----------
+
+  * only validates top-level keys and values
+  * strings are not internationalized
+
+
+Other Validation Libraries
+--------------------------
+
+Clojure has many validation libraries; here are a few I've looked at:
+
+* [clj-decline][clj-decline]
+* [clj-schema][clj-schema]
+* [dvt][dvt]
+* [valip][valip]
+* [validateur][validateur]
+
+The libraries have varying goals and approaches; take a look and give them a try. Please let me know if you see ideas that would benefit this project.
+
+[clj-decline]: https://github.com/joodie/clj-decline
+[clj-schema]: https://github.com/runa-dev/clj-schema
+[dvt]: https://github.com/clpe04/dvt
+[validateur]: https://github.com/michaelklishin/validateur
+[valip]: https://github.com/cemerick/valip
+
+
+License
+-------
+
+Copyright © 2013 Bluemont Labs LLC
+
+Distributed under the Eclipse Public License, the same as Clojure.
