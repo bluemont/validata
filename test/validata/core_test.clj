@@ -8,57 +8,60 @@
 
 (deftest key-present?-test
   (testing "key-present?"
-    (is (= false (v/key-present? nil   nil)))
-    (is (= false (v/key-present? nil   false)))
-    (is (= false (v/key-present? nil   true)))
-    (is (= false (v/key-present? false nil)))
-    (is (= false (v/key-present? false false)))
-    (is (= false (v/key-present? false true)))
-    (is (= true  (v/key-present? true  nil)))
-    (is (= true  (v/key-present? true  false)))
-    (is (= true  (v/key-present? true  true)))
-    (is (= true  (v/key-present? "a"   nil)))
-    (is (= true  (v/key-present? "a"   false)))
-    (is (= true  (v/key-present? "a"   true)))
-    (is (= true  (v/key-present? :a    nil)))
-    (is (= true  (v/key-present? :a    false)))
-    (is (= true  (v/key-present? :a    true)))))
+    (are [x y z] (= (v/key-present? x y) z)
+         nil   nil   false
+         nil   false false
+         nil   true  false
+         false nil   false
+         false false false
+         false true  false
+         true  nil   true
+         true  false true
+         true  true  true
+         "a"   nil   true
+         "a"   false true
+         "a"   true  true
+         :a    nil   true
+         :a    false true
+         :a    true  true)))
 
 (deftest key-keyword?-test
   (testing "key-keyword?"
-    (is (= true  (v/key-keyword? nil   nil)))
-    (is (= true  (v/key-keyword? nil   true)))
-    (is (= true  (v/key-keyword? nil   :x)))
-    (is (= false (v/key-keyword? false false)))
-    (is (= false (v/key-keyword? false true)))
-    (is (= false (v/key-keyword? false :x)))
-    (is (= false (v/key-keyword? true  nil)))
-    (is (= false (v/key-keyword? true  true)))
-    (is (= false (v/key-keyword? true  :x)))
-    (is (= true  (v/key-keyword? :a    nil)))
-    (is (= true  (v/key-keyword? :a    true)))
-    (is (= true  (v/key-keyword? :a    :x)))
-    (is (= false (v/key-keyword? "a"   nil)))
-    (is (= false (v/key-keyword? "a"   true)))
-    (is (= false (v/key-keyword? "a"   :x)))))
+    (are [x y z] (= (v/key-keyword? x y) z)
+         nil   nil   true
+         nil   true  true
+         nil   :x    true
+         false false false
+         false true  false
+         false :x    false
+         true  nil   false
+         true  true  false
+         true  :x    false
+         :a    nil   true
+         :a    true  true
+         :a    :x    true
+         "a"   nil   false
+         "a"   true  false
+         "a"   :x    false)))
 
 (deftest key-string?-test
   (testing "key-string?"
-    (is (= true  (v/key-string? nil   nil)))
-    (is (= true  (v/key-string? nil   true)))
-    (is (= true  (v/key-string? nil   :x)))
-    (is (= false (v/key-string? false false)))
-    (is (= false (v/key-string? false true)))
-    (is (= false (v/key-string? false :x)))
-    (is (= false (v/key-string? true  nil)))
-    (is (= false (v/key-string? true  true)))
-    (is (= false (v/key-string? true  :x)))
-    (is (= false (v/key-string? :a    nil)))
-    (is (= false (v/key-string? :a    true)))
-    (is (= false (v/key-string? :a    :x)))
-    (is (= true  (v/key-string? "a"   nil)))
-    (is (= true  (v/key-string? "a"   true)))
-    (is (= true  (v/key-string? "a"   :x)))))
+    (are [x y z] (= (v/key-string? x y) z)
+         nil   nil   true
+         nil   true  true
+         nil   :x    true
+         false false false
+         false true  false
+         false :x    false
+         true  nil   false
+         true  true  false
+         true  :x    false
+         :a    nil   false
+         :a    true  false
+         :a    :x    false
+         "a"   nil   true
+         "a"   true  true
+         "a"   :x    true)))
 
 ; ---------------------
 ; Test Value Validation
