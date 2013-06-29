@@ -51,6 +51,16 @@ Usage
 ; true
 ```
 
+To display errors for extra (unexpected keys), use this form of `errors`:
+
+```clojure
+(v/errors {:uuid "ed2b4b7d-1111-47e1-aa79-5b204758cd01"
+           :name "validata"
+           :junk 42} validations false)
+; {:junk [:error "key is unexpected"]}
+
+```
+
 
 Limitations
 -----------

@@ -253,6 +253,18 @@
              (v/property-error
                :a "d227317f-96aa-4e9b-a383-7e3a25a7712f" v/uuid-string))))))
 
+(deftest extra-keys-test
+  (testing "extra-keys"
+    (let [vs {:a [v/string]}]
+      (is (= (v/extra-keys {:a 1}      vs) #{}))
+      (is (= (v/extra-keys {:a 1 :b 2} vs) #{:b})))))
+
+(deftest extra-keys?-test
+  (testing "extra-keys?"
+    (let [vs {:a [v/string]}]
+      (is (= (v/extra-keys? {:a 1}      vs) false))
+      (is (= (v/extra-keys? {:a 1 :b 2} vs) true)))))
+
 (deftest errors-test
   (testing "errors"
     (testing "1 string"
@@ -289,7 +301,16 @@
         (is (= {:a [(:error v/required)]}
                (v/errors {} vs)))
         (is (= {}
-               (v/errors {:a "b"} vs)))))))
+               (v/errors {:a "b"} vs)))))
+    (testing "disallow unexpected keys"
+      (let [vs {:a [v/number v/required]
+                :x [v/keyword]}]
+        (is (= {:b [:error "key is unexpected"]
+                :c [:error "key is unexpected"]}
+               (v/errors {:a 1 :b 2 :c 3} vs false)))
+        (is (= {:b [:error "key is unexpected"]
+                :x [(:error v/keyword)]}
+               (v/errors {:a 1 :b 2 :x 42} vs false)))))))
 
 (deftest valid?-test
   (testing "valid?"

@@ -7,6 +7,7 @@
                            number? core-number?
                            string? core-string?})
   (:require [clj-time.format :as time-format]
+            [clojure.set :as set]
             [validata.util :as util]))
 
 ; ------------------------
@@ -199,11 +200,24 @@
   [k v validations]
   (filterv identity (map #(property-error k v %) validations)))
 
+;(defn extra-key-error)
+
+(defn extra-keys
+  "Returns the set of extra keys in map that are not present in
+  validation-map."
+  [m validation-map]
+  (set/difference (set (keys m)) (set (keys validation-map))))
+
+(defn extra-keys?
+  "Does map include keys that are not listed in validation-map?"
+  [m validation-map]
+  (not (empty? (extra-keys m validation-map))))
+
 ; -------------------------------
 ; High-Level Validation Functions
 ; -------------------------------
 
-(defn errors
+(defn errors-for-expected-keys
   "Validate the map using validations. Returns a map of failures, if any."
   [m validation-map]
   (let [errors-fn
@@ -214,14 +228,40 @@
          (util/map-values errors-fn)
          (util/filter-map value-not-empty?))))
 
+(defn errors-for-unexpected-keys
+  "Validate the map using validations. Returns a map of failures, if any."
+  [m validation-map]
+  (let [e-keys (extra-keys m validation-map)
+        error-fn (fn [k] {k [:error "key is unexpected"]})]
+    (into {} (map error-fn e-keys))))
+
+(defn errors
+  "Validate the map using validations. Returns a map of failures, if any.
+  Set allow-extra-keys?, an optional third parameter, to false to cause a
+  failure if unspecified keys are given."
+  ([m validation-map]
+   (errors m validation-map true))
+  ([m validation-map allow-extra-keys?]
+   (let [expected (errors-for-expected-keys m validation-map)]
+     (if allow-extra-keys?
+       expected
+       (let [unexpected (errors-for-unexpected-keys m validation-map)]
+         (merge expected unexpected))))))
+
 (defn valid?
   "Is the map valid for the given validations?"
-  [m validation-map]
-  (empty? (errors m validation-map)))
+  ([m validation-map]
+   (empty? (errors m validation-map)))
+  ([m validation-map allow-extra-keys?]
+   (empty? (errors m validation-map allow-extra-keys?))))
 
 (defn if-valid
   "If valid, call function with map; otherwise, throw exception."
-  [m validations f]
-  (if (valid? m validations)
-    (f m)
-    (throw (Exception. (str (errors m validations))))))
+  ([m validations f]
+   (if (valid? m validations)
+     (f m)
+     (throw (Exception. (str (errors m validations))))))
+  ([m validations allow-extra-keys? f]
+   (if (valid? m validations allow-extra-keys?)
+     (f m)
+     (throw (Exception. (str (errors m validations)))))))
