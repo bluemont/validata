@@ -175,83 +175,84 @@
   (testing "property-error"
     (testing "boolean"
       (is (= (:error v/boolean)
-             (v/property-error :a nil v/boolean)))
+             (v/property-error :a nil v/boolean {})))
       (is (= (:error v/boolean)
-             (v/property-error :a :b v/boolean)))
+             (v/property-error :a :b v/boolean {})))
       (is (= nil
-             (v/property-error :a true v/boolean)))
+             (v/property-error :a true v/boolean {})))
       (is (= nil
-             (v/property-error :a false v/boolean))))
+             (v/property-error :a false v/boolean {}))))
     (testing "keyword"
       (is (= (:error v/keyword)
-             (v/property-error :a nil v/keyword)))
+             (v/property-error :a nil v/keyword {})))
       (is (= (:error v/keyword)
-             (v/property-error :a "b" v/keyword)))
+             (v/property-error :a "b" v/keyword {})))
       (is (= nil
-             (v/property-error :a :b  v/keyword))))
+             (v/property-error :a :b  v/keyword {}))))
     (testing "not-nil"
       (is (= (:error v/not-nil)
-             (v/property-error :a nil v/not-nil)))
+             (v/property-error :a nil v/not-nil {})))
       (is (= nil
-             (v/property-error :a "b" v/not-nil)))
+             (v/property-error :a "b" v/not-nil {})))
       (is (= nil
-             (v/property-error :a :b v/not-nil))))
+             (v/property-error :a :b v/not-nil {}))))
     (testing "number"
       (is (= (:error v/number)
-             (v/property-error :a nil v/number)))
+             (v/property-error :a nil v/number {})))
       (is (= (:error v/number)
-             (v/property-error :a :b v/number)))
+             (v/property-error :a :b v/number {})))
       (is (= nil
-             (v/property-error :a 3 v/number)))
+             (v/property-error :a 3 v/number {})))
       (is (= nil
-             (v/property-error :a 3.14 v/number))))
+             (v/property-error :a 3.14 v/number {}))))
     (testing "string"
         (is (= (:error v/string)
-               (v/property-error :a nil v/string)))
+               (v/property-error :a nil v/string {})))
         (is (= (:error v/string)
-               (v/property-error :a :b  v/string)))
+               (v/property-error :a :b  v/string {})))
         (is (= nil
-               (v/property-error :a "b" v/string))))
+               (v/property-error :a "b" v/string {}))))
     (testing "timestamp"
       (is (= (:error v/timestamp)
-             (v/property-error :a nil v/timestamp)))
+             (v/property-error :a nil v/timestamp {})))
       (is (= (:error v/timestamp)
-             (v/property-error :a :b  v/timestamp)))
+             (v/property-error :a :b  v/timestamp {})))
       (is (= (:error v/timestamp)
-             (v/property-error :a "2013-05-01" v/timestamp)))
+             (v/property-error :a "2013-05-01" v/timestamp {})))
       (is (= nil
-             (v/property-error :a #inst "2013-05-01" v/timestamp))))
+             (v/property-error :a #inst "2013-05-01" v/timestamp {}))))
     (testing "timestamp-string"
       (is (= (:error v/timestamp-string)
-             (v/property-error :a nil v/timestamp-string)))
+             (v/property-error :a nil v/timestamp-string {})))
       (is (= (:error v/timestamp-string)
-             (v/property-error :a :b v/timestamp-string)))
+             (v/property-error :a :b v/timestamp-string {})))
       (is (= (:error v/timestamp-string)
-             (v/property-error :a #inst "2013-05-01" v/timestamp-string)))
+             (v/property-error :a #inst "2013-05-01" v/timestamp-string {})))
       (is (= nil
-             (v/property-error :a "2013-05-01" v/timestamp-string))))
+             (v/property-error :a "2013-05-01" v/timestamp-string {}))))
     (testing "uuid"
       (is (= (:error v/uuid)
-             (v/property-error :a nil v/uuid)))
+             (v/property-error :a nil v/uuid {})))
       (is (= (:error v/uuid)
-             (v/property-error :a :b  v/uuid)))
+             (v/property-error :a :b  v/uuid {})))
       (is (= (:error v/uuid)
              (v/property-error
-               :a "d227317f-96aa-4e9b-a383-7e3a25a7712f" v/uuid)))
+               :a "d227317f-96aa-4e9b-a383-7e3a25a7712f" v/uuid {})))
       (is (= nil
              (v/property-error
-               :a #uuid "d227317f-96aa-4e9b-a383-7e3a25a7712f" v/uuid))))
+               :a #uuid "d227317f-96aa-4e9b-a383-7e3a25a7712f" v/uuid {}))))
     (testing "uuid-string"
       (is (= (:error v/uuid-string)
-             (v/property-error :a nil v/uuid-string)))
+             (v/property-error :a nil v/uuid-string {})))
       (is (= (:error v/uuid-string)
-             (v/property-error :a :b v/uuid-string)))
+             (v/property-error :a :b v/uuid-string {})))
       (is (= (:error v/uuid-string)
              (v/property-error
-               :a #uuid "d227317f-96aa-4e9b-a383-7e3a25a7712f" v/uuid-string)))
+              :a #uuid "d227317f-96aa-4e9b-a383-7e3a25a7712f"
+              v/uuid-string {})))
       (is (= nil
              (v/property-error
-               :a "d227317f-96aa-4e9b-a383-7e3a25a7712f" v/uuid-string))))))
+               :a "d227317f-96aa-4e9b-a383-7e3a25a7712f" v/uuid-string {}))))))
 
 (deftest extra-keys-test
   (testing "extra-keys"

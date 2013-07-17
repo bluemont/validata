@@ -18,18 +18,18 @@
 
 (defn key-present?
   "Is the key present?"
-  [k v]
+  [k v & [_]]
   (core-boolean k))
 
 (defn key-keyword?
   "If key not nil, is the key a keyword?"
-  [k v]
+  [k v & [_]]
   (if (nil? k) true
     (core-keyword? k)))
 
 (defn key-string?
   "If key not nil, is the key a string?"
-  [k v]
+  [k v & [_]]
   (if (nil? k) true
     (core-string? k)))
 
@@ -63,63 +63,63 @@
 
 (defn boolean?
   "If key not nil, is value a boolean?"
-  [k v]
+  [k v & [_]]
   (if (nil? k) true
     (or (= v true) (= v false))))
 
 (defn integer?
   "If key not nil, is value an integer?"
-  [k v]
+  [k v & [_]]
   (if (nil? k) true
     (core-integer? v)))
 
 (defn keyword?
   "If key not nil, is value a keyword?"
-  [k v]
+  [k v & [_]]
   (if (nil? k) true
     (core-keyword? v)))
 
 (defn not-nil?
   "If key not nil, is value not nil?"
-  [k v]
+  [k v & [_]]
   (if (nil? k) true
     (not (nil? v))))
 
 (defn number?
   "If key not nil, is value a number?"
-  [k v]
+  [k v & [_]]
   (if (nil? k) true
     (core-number? v)))
 
 (defn positive?
   "If key not nil, is value positive?"
-  [k v]
+  [k v & [_]]
   (if (nil? k) true
     (if (not (number? k v)) false
       (pos? v))))
 
 (defn string?
   "If key not nil, is value a string?"
-  [k v]
+  [k v & [_]]
   (if (nil? k) true
     (core-string? v)))
 
 (defn timestamp?
   "If key not nil, is value a timestamp?"
-  [k v]
+  [k v & [_]]
   (if (nil? k) true
     (= java.util.Date (type v))))
 
 (defn timestamp-string?
   "If key not nil, is value a timestamp string?"
-  [k v]
+  [k v & [_]]
   (if (nil? k) true
     (if (not (string? k v)) false
       (core-boolean (time-format/parse v)))))
 
 (defn uuid?
   "If key not nil, is value a uuid?"
-  [k v]
+  [k v & [_]]
   (if (nil? k) true
     (= java.util.UUID (type v))))
 
@@ -129,7 +129,7 @@
 
 (defn uuid-string?
   "If key not nil, is value a uuid string?"
-  [k v]
+  [k v & [_]]
   (if (nil? k) true
     (if (not (string? k v)) false
       (core-boolean (re-matches uuid-re v)))))
@@ -189,16 +189,16 @@
 (defn property-error
   "Validate a property (a key and value) against a validation. Returns error
   or nil."
-  [k v validation]
-  (if (apply (:validator validation) [k v])
+  [k v validation props]
+  (if (apply (:validator validation) [k v props])
     nil
     (:error validation)))
 
 (defn property-errors
   "Validate a property (a key and value) against validations. Returns a vector
   of errors or []."
-  [k v validations]
-  (filterv identity (map #(property-error k v %) validations)))
+  [k v validations props]
+  (filterv identity (map #(property-error k v % props) validations)))
 
 ;(defn extra-key-error)
 
@@ -222,7 +222,7 @@
   [m validation-map]
   (let [errors-fn
         (fn [k v]
-          (property-errors (some #{k} (keys m)) (k m) (k validation-map)))
+          (property-errors (some #{k} (keys m)) (k m) (k validation-map) m))
         value-not-empty? (fn [k v] (not (empty? v)))]
     (->> validation-map
          (util/map-values errors-fn)
