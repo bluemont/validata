@@ -222,7 +222,7 @@
   [m validation-map]
   (let [errors-fn
         (fn [k v]
-          (property-errors (some #{k} (keys m)) (k m) (k validation-map) m))
+          (property-errors (or (some #{k} (keys m)) (if (vector? k) k)) (get m k) (get validation-map k) m))
         value-not-empty? (fn [k v] (not (empty? v)))]
     (->> validation-map
          (util/map-values errors-fn)
