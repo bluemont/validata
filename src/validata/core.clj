@@ -260,8 +260,10 @@
   ([m validations f]
    (if (valid? m validations)
      (f m)
-     (throw (validata.Exception. (str (errors m validations))))))
+     (let [errors (errors m validations)]
+       (throw (ex-info (str errors) errors)))))
   ([m validations allow-extra-keys? f]
    (if (valid? m validations allow-extra-keys?)
      (f m)
-     (throw (validata.Exception. (str (errors m validations)))))))
+     (let [errors (errors m validations allow-extra-keys?)]
+       (throw (ex-info (str errors) errors))))))

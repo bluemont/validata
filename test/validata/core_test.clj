@@ -320,3 +320,13 @@
         (is (= false (v/valid? {:a :b} vs)))
         (is (= true  (v/valid? {} vs)))
         (is (= true  (v/valid? {:a "b"} vs)))))))
+
+(deftest if-valid-test
+  (testing "throws exception when not valid"
+    (let [vs {:a [v/string]}]
+      (try (v/if-valid {:a :b} vs #(println %))
+           (catch clojure.lang.ExceptionInfo ex
+             (is (not (empty? (ex-data ex))))))
+      (try (v/if-valid {:a "b" :c "b"} vs false #(println %))
+           (catch clojure.lang.ExceptionInfo ex
+             (is (not (empty? (ex-data ex)))))))))
