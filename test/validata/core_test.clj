@@ -191,7 +191,8 @@
     (is (= false (v/uuid-string? :a "")))
     (is (= false (v/uuid-string?
                    :a #uuid "d227317f-96aa-4e9b-a383-7e3a25a7712f")))
-    (is (= true (v/uuid-string? :a "d227317f-96aa-4e9b-a383-7e3a25a7712f")))))
+    (is (= true  (v/uuid-string?
+                   :a "d227317f-96aa-4e9b-a383-7e3a25a7712f")))))
 
 (deftest vector?-test
   (testing "vector?"
