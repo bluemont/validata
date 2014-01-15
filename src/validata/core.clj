@@ -4,8 +4,17 @@
                            integer? core-integer?
                            keyword core-keyword
                            keyword? core-keyword?
+                           map core-map
+                           map? core-map?
                            number? core-number?
-                           string? core-string?})
+                           seq core-seq
+                           seq? core-seq?
+                           set core-set
+                           set? core-set?
+                           string? core-string?
+                           vector core-vector
+                           vector? core-vector?
+                           })
   (:require [clj-time.format :as time-format]
             [clojure.set :as set]
             [validata.util :as util]))
@@ -79,6 +88,12 @@
   (if (nil? k) true
     (core-keyword? v)))
 
+(defn map?
+  "If key not nil, is value a map?"
+  [k v & [_]]
+  (if (nil? k) true
+    (core-map? v)))
+
 (defn not-nil?
   "If key not nil, is value not nil?"
   [k v & [_]]
@@ -97,6 +112,18 @@
   (if (nil? k) true
     (if (not (number? k v)) false
       (pos? v))))
+
+(defn seq?
+  "If key not nil, is value a seq?"
+  [k v & [_]]
+  (if (nil? k) true
+    (core-seq? v)))
+
+(defn set?
+  "If key not nil, is value a set?"
+  [k v & [_]]
+  (if (nil? k) true
+    (core-set? v)))
 
 (defn string?
   "If key not nil, is value a string?"
@@ -124,7 +151,7 @@
     (= java.util.UUID (type v))))
 
 (def uuid-re
-  (let [groups (map #(str "[0-9a-fA-F]{" % "}") [8 4 4 4 12])]
+  (let [groups (core-map #(str "[0-9a-fA-F]{" % "}") [8 4 4 4 12])]
     (re-pattern (clojure.string/join "-" groups))))
 
 (defn uuid-string?
@@ -133,6 +160,12 @@
   (if (nil? k) true
     (if (not (string? k v)) false
       (core-boolean (re-matches uuid-re v)))))
+
+(defn vector?
+  "If key not nil, is value a vector?"
+  [k v & [_]]
+  (if (nil? k) true
+    (core-vector? v)))
 
 ; ---------------------
 ; Value Validation Vars
@@ -150,6 +183,10 @@
   {:validator integer?
    :error "value must be an integer"})
 
+(def map
+  {:validator map?
+   :error "value must be a map"})
+
 (def not-nil
   {:validator not-nil?
    :error "value must be non-nil"})
@@ -161,6 +198,14 @@
 (def positive
   {:validator positive?
    :error "value must be positive"})
+
+(def seq
+  {:validator seq?
+   :error "value must be a seq"})
+
+(def set
+  {:validator set?
+   :error "value must be a set"})
 
 (def string
   {:validator string?
@@ -182,6 +227,10 @@
   {:validator uuid-string?
    :error "value must be a uuid string"})
 
+(def vector
+  {:validator vector?
+   :error "value must be a vector"})
+
 ; ----------------------------
 ; Private Validation Functions
 ; ----------------------------
@@ -198,7 +247,7 @@
   "Validate a property (a key and value) against validations. Returns a vector
   of errors or []."
   [k v validations props]
-  (filterv identity (map #(property-error k v % props) validations)))
+  (filterv identity (core-map #(property-error k v % props) validations)))
 
 ;(defn extra-key-error)
 
@@ -206,7 +255,9 @@
   "Returns the set of extra keys in map that are not present in
   validation-map."
   [m validation-map]
-  (set/difference (set (keys m)) (set (keys validation-map))))
+  (set/difference
+    (core-set (keys m))
+    (core-set (keys validation-map))))
 
 (defn extra-keys?
   "Does map include keys that are not listed in validation-map?"
@@ -222,7 +273,10 @@
   [m validation-map]
   (let [errors-fn
         (fn [k v]
-          (property-errors (or (some #{k} (keys m)) (if (vector? k) k)) (get m k) (get validation-map k) m))
+          (property-errors (or (some #{k} (keys m))
+                               (if (core-vector? k) k))
+                           (get m k)
+                           (get validation-map k) m))
         value-not-empty? (fn [k v] (not (empty? v)))]
     (->> validation-map
          (util/map-values errors-fn)
@@ -233,7 +287,7 @@
   [m validation-map]
   (let [e-keys (extra-keys m validation-map)
         error-fn (fn [k] {k [:error "key is unexpected"]})]
-    (into {} (map error-fn e-keys))))
+    (into {} (core-map error-fn e-keys))))
 
 (defn errors
   "Validate the map using validations. Returns a map of failures, if any.

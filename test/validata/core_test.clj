@@ -93,6 +93,14 @@
     (is (= false (v/keyword? :a "")))
     (is (= true  (v/keyword? :a :b)))))
 
+(deftest map?-test
+  (testing "map?"
+    (is (= true  (v/map? nil nil)))
+    (is (= false (v/map? :a nil)))
+    (is (= false (v/map? :a "")))
+    (is (= true  (v/map? :a {})))
+    (is (= true  (v/map? :a {:a 1 :b 2})))))
+
 (deftest not-nil?-test
   (testing "number?"
     (is (= true  (v/not-nil? nil nil)))
@@ -120,6 +128,24 @@
     (is (= false (v/positive? :a -2.5)))
     (is (= true  (v/positive? :a 3.14)))
     (is (= true  (v/positive? :a 42)))))
+
+(deftest seq?-test
+  (testing "seq?"
+    (is (= true  (v/seq? nil nil)))
+    (is (= false (v/seq? :a nil)))
+    (is (= false (v/seq? :a false)))
+    (is (= false (v/seq? :a :b)))
+    (is (= true  (v/seq? :a '())))
+    (is (= true  (v/seq? :a '(1 2 3))))))
+
+(deftest set?-test
+  (testing "set?"
+    (is (= true  (v/set? nil nil)))
+    (is (= false (v/set? :a nil)))
+    (is (= false (v/set? :a false)))
+    (is (= false (v/set? :a :b)))
+    (is (= true  (v/set? :a #{})))
+    (is (= true  (v/set? :a #{1 2 3})))))
 
 (deftest string?-test
   (testing "string?"
@@ -166,6 +192,14 @@
     (is (= false (v/uuid-string?
                    :a #uuid "d227317f-96aa-4e9b-a383-7e3a25a7712f")))
     (is (= true (v/uuid-string? :a "d227317f-96aa-4e9b-a383-7e3a25a7712f")))))
+
+(deftest vector?-test
+  (testing "vector?"
+    (is (= true  (v/vector? nil nil)))
+    (is (= false (v/vector? :a nil)))
+    (is (= false (v/vector? :a "")))
+    (is (= true  (v/vector? :a [])))
+    (is (= true  (v/vector? :a [1 2])))))
 
 ; -------------------------
 ; Test Validation Functions
