@@ -336,6 +336,8 @@
                (v/errors {:a :b} vs)))
         (is (= {:a [(:error v/required)]}
                (v/errors {} vs)))
+        (is (= {:a [(:error v/string)]}
+               (v/errors {:a nil} vs)))
         (is (= {}
                (v/errors {:a "b"} vs)))))
     (testing "disallow unexpected keys"
