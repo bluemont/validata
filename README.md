@@ -10,12 +10,22 @@ Validata is a Clojure library to validates maps. Its goals are:
   * make validation functions easy to extend
   * use simple, easy-to-understand internals
 
-There are many alternatives for validation in Clojure; I list some alternatives below. My goal is to make validata clean and simple relative to some of the other options.
+There are many alternatives for validation in Clojure; I list some
+alternatives below. My goal is to make validata clean and simple relative to
+some of the other options.
 
 [![Build Status](https://travis-ci.org/bluemont/validata.png)](https://travis-ci.org/bluemont/validata)
 
 Usage
 -----
+
+Add this to your `project.clj` dependencies:
+
+```clojure
+[validata "0.1.5]
+```
+
+Here is an example:
 
 ```clojure
 (ns example.core
@@ -92,6 +102,6 @@ The libraries have varying goals and approaches; take a look and give them a try
 License
 -------
 
-Copyright © 2013 Bluemont Labs LLC
+Copyright 2014 Bluemont Labs LLC
 
 Distributed under the Eclipse Public License, the same as Clojure.
