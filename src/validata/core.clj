@@ -13,8 +13,7 @@
                            set? core-set?
                            string? core-string?
                            vector core-vector
-                           vector? core-vector?
-                           })
+                           vector? core-vector?})
   (:require [clj-time.format :as time-format]
             [clojure.set :as set]
             [validata.util :as util]))
