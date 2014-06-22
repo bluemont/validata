@@ -232,7 +232,7 @@
   "Validate a property (a key and value) against a validation. Returns error
   or nil."
   [k v validation props]
-  (if (apply (:validator validation) [k v props])
+  (if ((:validator validation) k v props)
     nil
     (:error validation)))
 
