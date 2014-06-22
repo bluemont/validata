@@ -262,11 +262,9 @@
   "Validate the map using validations. Returns a map of failures, if any."
   [m validation-map]
   (let [errors-fn
-        (fn [k v]
-          (property-errors (or (some #{k} (keys m))
-                               (if (core-vector? k) k))
-                           (get m k)
-                           (get validation-map k) m))
+        (fn [k v] (property-errors (or (some #{k} (keys m))
+                                       (if (core-vector? k) k))
+                                   (get m k) (get validation-map k) m))
         value-not-empty? (fn [k v] (not (empty? v)))]
     (->> validation-map
          (util/map-values errors-fn)
