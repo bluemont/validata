@@ -8,7 +8,7 @@
 
 (deftest key-present?-test
   (testing "key-present?"
-    (are [x y z] (= (v/key-present? x y) z)
+    (are [x y z] (= (v/key-present? x y {}) z)
          nil   nil   false
          nil   false false
          nil   true  false
@@ -27,7 +27,7 @@
 
 (deftest key-keyword?-test
   (testing "key-keyword?"
-    (are [x y z] (= (v/key-keyword? x y) z)
+    (are [x y z] (= (v/key-keyword? x y {}) z)
          nil   nil   true
          nil   true  true
          nil   :x    true
@@ -46,7 +46,7 @@
 
 (deftest key-string?-test
   (testing "key-string?"
-    (are [x y z] (= (v/key-string? x y) z)
+    (are [x y z] (= (v/key-string? x y {}) z)
          nil   nil   true
          nil   true  true
          nil   :x    true
@@ -69,138 +69,151 @@
 
 (deftest boolean?-test
   (testing "boolean?"
-    (is (= true  (v/boolean? nil nil)))
-    (is (= false (v/boolean? :a nil)))
-    (is (= false (v/boolean? :a "")))
-    (is (= true  (v/boolean? :a false)))
-    (is (= true  (v/boolean? :a true)))))
+    (are [k v e] (= (v/boolean? k v {}) e)
+         nil nil  true
+         :a nil   false
+         :a ""    false
+         :a false true
+         :a true  true)))
 
 (deftest integer?-test
   (testing "integer?"
-    (is (= true  (v/integer? nil nil)))
-    (is (= false (v/integer? :a nil)))
-    (is (= false (v/integer? :a false)))
-    (is (= false (v/integer? :a "3")))
-    (is (= false (v/integer? :a 9.9)))
-    (is (= true  (v/integer? :a -1)))
-    (is (= true  (v/integer? :a 42)))))
+    (are [k v e] (= (v/integer? k v {}) e)
+         nil nil   true
+         :a  nil   false
+         :a  false false
+         :a  "3"   false
+         :a  9.9   false
+         :a  -1    true
+         :a  42    true)))
 
 (deftest keyword?-test
   (testing "keyword?"
-    (is (= true  (v/keyword? nil nil)))
-    (is (= false (v/keyword? :a nil)))
-    (is (= false (v/keyword? :a false)))
-    (is (= false (v/keyword? :a "")))
-    (is (= true  (v/keyword? :a :b)))))
+    (are [k v e] (= (v/keyword? k v {}) e)
+         nil nil   true
+         :a  nil   false
+         :a  false false
+         :a  ""    false
+         :a  :b    true)))
 
 (deftest map?-test
   (testing "map?"
-    (is (= true  (v/map? nil nil)))
-    (is (= false (v/map? :a nil)))
-    (is (= false (v/map? :a "")))
-    (is (= true  (v/map? :a {})))
-    (is (= true  (v/map? :a {:a 1 :b 2})))))
+    (are [k v e] (= (v/map? k v {}) e)
+         nil nil         true
+         :a  nil         false
+         :a  ""          false
+         :a  {}          true
+         :a  {:a 1 :b 2} true)))
 
 (deftest not-nil?-test
-  (testing "number?"
-    (is (= true  (v/not-nil? nil nil)))
-    (is (= false (v/not-nil? :a nil)))
-    (is (= true  (v/not-nil? :a false)))
-    (is (= true  (v/not-nil? :a "x")))
-    (is (= true  (v/not-nil? :a :b)))))
+  (testing "not-nil?"
+    (are [k v e] (= (v/not-nil? k v {}) e)
+         nil nil    true
+         :a  nil    false
+         :a  false  true
+         :a  "x"    true
+         :a  :b     true)))
 
 (deftest number?-test
   (testing "number?"
-    (is (= true  (v/number? nil nil)))
-    (is (= false (v/number? :a nil)))
-    (is (= false (v/number? :a false)))
-    (is (= false (v/number? :a "")))
-    (is (= true  (v/number? :a -3)))
-    (is (= true  (v/number? :a 42)))
-    (is (= true  (v/number? :a 3.4)))))
+    (are [k v e] (= (v/number? k v {}) e)
+         nil nil   true
+         :a  nil   false
+         :a  false false
+         :a  ""    false
+         :a  -3    true
+         :a  42    true
+         :a  3.4   true)))
 
 (deftest positive?-test
   (testing "positive?"
-    (is (= true  (v/positive? nil nil)))
-    (is (= false (v/positive? :a nil)))
-    (is (= false (v/positive? :a false)))
-    (is (= false (v/positive? :a "")))
-    (is (= false (v/positive? :a -2.5)))
-    (is (= true  (v/positive? :a 3.14)))
-    (is (= true  (v/positive? :a 42)))))
+    (are [k v e] (= (v/positive? k v {}) e)
+         nil nil   true
+         :a  nil   false
+         :a  false false
+         :a  ""    false
+         :a  -3    false
+         :a  42    true
+         :a  3.4   true)))
 
 (deftest seq?-test
   (testing "seq?"
-    (is (= true  (v/seq? nil nil)))
-    (is (= false (v/seq? :a nil)))
-    (is (= false (v/seq? :a false)))
-    (is (= false (v/seq? :a :b)))
-    (is (= true  (v/seq? :a '())))
-    (is (= true  (v/seq? :a '(1 2 3))))))
+    (are [k v e] (= (v/seq? k v {}) e)
+         nil nil      true
+         :a  nil      false
+         :a  false    false
+         :a  :b       false
+         :a  '()      true
+         :a  '(1 2 3) true)))
 
 (deftest set?-test
   (testing "set?"
-    (is (= true  (v/set? nil nil)))
-    (is (= false (v/set? :a nil)))
-    (is (= false (v/set? :a false)))
-    (is (= false (v/set? :a :b)))
-    (is (= true  (v/set? :a #{})))
-    (is (= true  (v/set? :a #{1 2 3})))))
+    (are [k v e] (= (v/set? k v {}) e)
+         nil nil      true
+         :a  nil      false
+         :a  false    false
+         :a  :b       false
+         :a  #{}      true
+         :a  #{1 2 3} true)))
 
 (deftest string?-test
   (testing "string?"
-    (is (= true  (v/string? nil nil)))
-    (is (= false (v/string? :a nil)))
-    (is (= false (v/string? :a false)))
-    (is (= false (v/string? :a :b)))
-    (is (= true  (v/string? :a "b")))))
+    (are [k v e] (= (v/string? k v {}) e)
+         nil nil   true
+         :a  nil   false
+         :a  false false
+         :a  :b    false
+         :a  "b"   true)))
 
 (deftest timestamp?-test
   (testing "timestamp?"
-    (is (= true  (v/timestamp? nil nil)))
-    (is (= false (v/timestamp? :a nil)))
-    (is (= false (v/timestamp? :a "")))
-    (is (= true  (v/timestamp? :a #inst "2013-05-21")))
-    (is (= true  (v/timestamp? :a #inst "2013-05-21T21:04")))
-    (is (= true  (v/timestamp? :a #inst "2013-05-21T21:04:54.622Z")))))
+    (are [k v e] (= (v/timestamp? k v {}) e)
+         nil nil                              true
+         :a  nil                              false
+         :a  ""                               false
+         :a  #inst "2013-05-21"               true
+         :a  #inst "2013-05-21T21:04"         true
+         :a  #inst "2013-05-21T21:04:54.622Z" true)))
 
 (deftest timestamp-string?-test
   (testing "timestamp-string?"
-    (is (= true  (v/timestamp-string? nil nil)))
-    (is (= false (v/timestamp-string? :a nil)))
-    (is (= false (v/timestamp-string? :a "")))
-    (is (= false (v/timestamp-string? :a "2013-05-32")))
-    (is (= false (v/timestamp-string? :a "2013-05-02T21:74:54")))
-    (is (= false (v/timestamp-string? :a "2013-05-02T29:0Q:54.622Z")))
-    (is (= true  (v/timestamp-string? :a "2013-05-21")))
-    (is (= true  (v/timestamp-string? :a "2013-05-21T21:04")))
-    (is (= true  (v/timestamp-string? :a "2013-05-21T21:04:54.622Z")))))
+    (are [k v e] (= (v/timestamp-string? k v {}) e)
+         nil nil                        true
+         :a  nil                        false
+         :a  ""                         false
+         :a  "2013-05-32"               false
+         :a  "2013-05-02T21:74:54"      false
+         :a  "2013-05-02T29:0Q:54.622Z" false
+         :a  "2013-05-21"               true
+         :a  "2013-05-21T21:04"         true
+         :a  "2013-05-21T21:04:54.622Z" true)))
 
 (deftest uuid?-test
   (testing "uuid?"
-    (is (= true  (v/uuid? nil nil)))
-    (is (= false (v/uuid? :a nil)))
-    (is (= false (v/uuid? :a "")))
-    (is (= false (v/uuid? :a "d227317f-96aa-4e9b-a383-7e3a25a7712f")))
-    (is (= true  (v/uuid? :a #uuid "d227317f-96aa-4e9b-a383-7e3a25a7712f")))))
+    (are [k v e] (= (v/uuid? k v {}) e)
+         nil nil                                          true
+         :a  nil                                          false
+         :a  ""                                           false
+         :a  "d227317f-96aa-4e9b-a383-7e3a25a7712f"       false
+         :a  #uuid "d227317f-96aa-4e9b-a383-7e3a25a7712f" true)))
 
 (deftest uuid-string?-test
   (testing "uuid-string?"
-    (is (= true  (v/uuid-string? nil nil)))
-    (is (= false (v/uuid-string? :a nil)))
-    (is (= false (v/uuid-string? :a "")))
-    (is (= false (v/uuid-string?
-                   :a #uuid "d227317f-96aa-4e9b-a383-7e3a25a7712f")))
-    (is (= true  (v/uuid-string?
-                   :a "d227317f-96aa-4e9b-a383-7e3a25a7712f")))))
+    (are [k v e] (= (v/uuid-string? k v {}) e)
+         nil nil                                          true
+         :a  nil                                          false
+         :a  ""                                           false
+         :a  "d227317f-96aa-4e9b-a383-7e3a25a7712f"       true
+         :a  #uuid "d227317f-96aa-4e9b-a383-7e3a25a7712f" false)))
 
 (deftest vector?-test
   (testing "vector?"
-    (is (= true  (v/vector? nil nil)))
-    (is (= false (v/vector? :a nil)))
-    (is (= false (v/vector? :a "")))
-    (is (= true  (v/vector? :a [])))
-    (is (= true  (v/vector? :a [1 2])))))
+    (are [k v e] (= (v/vector? k v {}) e)
+         nil nil   true
+         :a  nil   false
+         :a  ""    false
+         :a  []    true
+         :a  [1 2] true)))
 
 ; -------------------------
 ; Test Validation Functions
@@ -352,18 +365,19 @@
 
 (deftest valid?-test
   (testing "valid?"
-    (testing "1 string"
-      (let [vs {:a [v/string]}]
-        (is (= false (v/valid? {:a :b} vs)))
-        (is (= true  (v/valid? {} vs)))
-        (is (= true  (v/valid? {:a "b"} vs)))))))
+    (are [m e] (is (= (v/valid? m {:a [v/string]})))
+         {:a :b}  false
+         {}       true
+         {:a "b"} true)))
 
 (deftest if-valid-test
-  (testing "throws exception when not valid"
+  (testing "if-valid"
     (let [vs {:a [v/string]}]
-      (try (v/if-valid {:a :b} vs #(println %))
-           (catch clojure.lang.ExceptionInfo ex
-             (is (not (empty? (ex-data ex))))))
-      (try (v/if-valid {:a "b" :c "b"} vs false #(println %))
-           (catch clojure.lang.ExceptionInfo ex
-             (is (not (empty? (ex-data ex)))))))))
+      (is (thrown?
+            clojure.lang.ExceptionInfo
+            (v/if-valid {:a :x} vs identity)))
+      (is (v/if-valid {:a "x"} vs identity))
+      (is (v/if-valid {:a "x" :b "y"} vs identity))
+      (is (thrown?
+            clojure.lang.ExceptionInfo
+            (v/if-valid {:a "x" :b "y"} vs false identity))))))

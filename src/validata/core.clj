@@ -1,5 +1,25 @@
 (ns validata.core
-  "Validation functions."
+  "Validation functions.
+
+  All validation functions must accept these three arguments --
+  key, value, properties -- even if the function does not use some
+  of the arguments. This convention allows for function composition.
+
+  There are two kinds of validation functions:
+
+    A. Key Validation Functions
+
+       These are functions that test the key, not the value. By
+       convention, there names must begin with 'key-'.
+
+    B. Value Validation Functions
+
+       These are functions that test the value. All must:
+
+       1. Return true when a key is nil. This is by design; use
+         `key-required` if a key is required.
+       2. Return false if a key is present but the value is nil. To
+          signify a missing value, do not pass the key."
   (:refer-clojure :rename {boolean core-boolean
                            integer? core-integer?
                            keyword core-keyword
@@ -21,25 +41,21 @@
 ; ------------------------
 ; Key Validation Functions
 ; ------------------------
-;
-; By convention, all functions that test the key should start with 'key-'.
 
 (defn key-present?
   "Is the key present?"
-  [k v & [_]]
+  [k v props]
   (core-boolean k))
 
 (defn key-keyword?
   "If key not nil, is the key a keyword?"
-  [k v & [_]]
-  (if (nil? k) true
-    (core-keyword? k)))
+  [k v props]
+  (or (nil? k) (core-keyword? k)))
 
 (defn key-string?
   "If key not nil, is the key a string?"
-  [k v & [_]]
-  (if (nil? k) true
-    (core-string? k)))
+  [k v props]
+  (or (nil? k) (core-string? k)))
 
 ; -------------------
 ; Key Validation Vars
@@ -62,92 +78,72 @@
 ; --------------------------
 ; Value Validation Functions
 ; --------------------------
-;
-; All functions must:
-; 1. Return true when a key is nil. This is by design; use `key-required` if a
-;    key is required.
-; 2. Return false if a key is present but the value is nil. If you want to
-;    signify a missing value, do not pass the key.
 
 (defn boolean?
   "If key not nil, is value a boolean?"
-  [k v & [_]]
-  (if (nil? k) true
-    (or (= v true) (= v false))))
+  [k v props]
+  (or (nil? k) (= v true) (= v false)))
 
 (defn integer?
   "If key not nil, is value an integer?"
-  [k v & [_]]
-  (if (nil? k) true
-    (core-integer? v)))
+  [k v props]
+  (or (nil? k) (core-integer? v)))
 
 (defn keyword?
   "If key not nil, is value a keyword?"
-  [k v & [_]]
-  (if (nil? k) true
-    (core-keyword? v)))
+  [k v props]
+  (or (nil? k) (core-keyword? v)))
 
 (defn map?
   "If key not nil, is value a map?"
-  [k v & [_]]
-  (if (nil? k) true
-    (core-map? v)))
+  [k v props]
+  (or (nil? k) (core-map? v)))
 
 (defn not-nil?
   "If key not nil, is value not nil?"
-  [k v & [_]]
-  (if (nil? k) true
-    (not (nil? v))))
+  [k v props]
+  (or (nil? k) (not (nil? v))))
 
 (defn number?
   "If key not nil, is value a number?"
-  [k v & [_]]
-  (if (nil? k) true
-    (core-number? v)))
+  [k v props]
+  (or (nil? k) (core-number? v)))
 
 (defn positive?
   "If key not nil, is value positive?"
-  [k v & [_]]
-  (if (nil? k) true
-    (if (not (number? k v)) false
-      (pos? v))))
+  [k v props]
+  (or (nil? k) (and (core-number? v) (pos? v))))
 
 (defn seq?
   "If key not nil, is value a seq?"
-  [k v & [_]]
-  (if (nil? k) true
-    (core-seq? v)))
+  [k v props]
+  (or (nil? k) (core-seq? v)))
 
 (defn set?
   "If key not nil, is value a set?"
-  [k v & [_]]
-  (if (nil? k) true
-    (core-set? v)))
+  [k v props]
+  (or (nil? k) (core-set? v)))
 
 (defn string?
   "If key not nil, is value a string?"
-  [k v & [_]]
-  (if (nil? k) true
-    (core-string? v)))
+  [k v props]
+  (or (nil? k) (core-string? v)))
 
 (defn timestamp?
   "If key not nil, is value a timestamp?"
-  [k v & [_]]
-  (if (nil? k) true
-    (= java.util.Date (type v))))
+  [k v props]
+  (or (nil? k) (= java.util.Date (type v))))
 
 (defn timestamp-string?
   "If key not nil, is value a timestamp string?"
-  [k v & [_]]
-  (if (nil? k) true
-    (if (not (string? k v)) false
-      (core-boolean (time-format/parse v)))))
+  [k v props]
+  (or (nil? k) (and (core-string? v)
+                    (core-boolean (time-format/parse v)))))
 
 (defn uuid?
   "If key not nil, is value a uuid?"
-  [k v & [_]]
-  (if (nil? k) true
-    (= java.util.UUID (type v))))
+  [k v props]
+  (or (nil? k) (= java.util.UUID (type v))))
 
 (def uuid-re
   (let [groups (core-map #(str "[0-9a-fA-F]{" % "}") [8 4 4 4 12])]
@@ -155,16 +151,14 @@
 
 (defn uuid-string?
   "If key not nil, is value a uuid string?"
-  [k v & [_]]
-  (if (nil? k) true
-    (if (not (string? k v)) false
-      (core-boolean (re-matches uuid-re v)))))
+  [k v props]
+  (or (nil? k) (and (core-string? v)
+                    (core-boolean (re-matches uuid-re v)))))
 
 (defn vector?
   "If key not nil, is value a vector?"
-  [k v & [_]]
-  (if (nil? k) true
-    (core-vector? v)))
+  [k v props]
+  (or (nil? k) (core-vector? v)))
 
 ; ---------------------
 ; Value Validation Vars
@@ -248,20 +242,16 @@
   [k v validations props]
   (filterv identity (core-map #(property-error k v % props) validations)))
 
-;(defn extra-key-error)
-
 (defn extra-keys
-  "Returns the set of extra keys in map that are not present in
-  validation-map."
-  [m validation-map]
-  (set/difference
-    (core-set (keys m))
-    (core-set (keys validation-map))))
+  "Returns the set of extra keys in map `m` that are not present in
+  validation map `v-map`."
+  [m v-map]
+  (set/difference (core-set (keys m)) (core-set (keys v-map))))
 
 (defn extra-keys?
-  "Does map include keys that are not listed in validation-map?"
-  [m validation-map]
-  (not (empty? (extra-keys m validation-map))))
+  "Does map `m` include keys that are not listed in validation-map?"
+  [m v-map]
+  (not (empty? (extra-keys m v-map))))
 
 ; -------------------------------
 ; High-Level Validation Functions
