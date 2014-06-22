@@ -240,7 +240,8 @@
   "Validate a property (a key and value) against validations. Returns a vector
   of errors or []."
   [k v validations props]
-  (filterv identity (core-map #(property-error k v % props) validations)))
+  (->> (core-map #(property-error k v % props) validations)
+       (filterv identity)))
 
 (defn extra-keys
   "Returns the set of extra keys in map `m` that are not present in
