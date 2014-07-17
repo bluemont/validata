@@ -367,7 +367,7 @@
 
 (deftest valid?-test
   (testing "valid?"
-    (are [m e] (is (= (v/valid? m {:a [v/string]})))
+    (are [m e] (is (= (v/valid? m {:a [v/string]}) e))
          {:a :b}  false
          {}       true
          {:a "b"} true)))
