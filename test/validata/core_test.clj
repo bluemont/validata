@@ -305,14 +305,16 @@
 (deftest extra-keys-test
   (testing "extra-keys"
     (let [vs {:a [v/string]}]
-      (is (= (v/extra-keys {:a 1}      vs) #{}))
-      (is (= (v/extra-keys {:a 1 :b 2} vs) #{:b})))))
+      (are [m e] (= (v/extra-keys m vs) e)
+           {:a 1} #{}
+           {:a 1 :b 2} #{:b}))))
 
 (deftest extra-keys?-test
   (testing "extra-keys?"
     (let [vs {:a [v/string]}]
-      (is (= (v/extra-keys? {:a 1}      vs) false))
-      (is (= (v/extra-keys? {:a 1 :b 2} vs) true)))))
+      (are [m e] (= (v/extra-keys? m vs) e)
+           {:a 1} false
+           {:a 1 :b 2} true))))
 
 (deftest errors-test
   (testing "errors"
