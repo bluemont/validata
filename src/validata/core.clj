@@ -21,6 +21,9 @@
        2. Return false if a key is present but the value is nil. To
           signify a missing value, do not pass the key."
   (:refer-clojure :rename {boolean core-boolean
+                           float core-float
+                           float? core-float?
+                           double core-double
                            integer? core-integer?
                            keyword core-keyword
                            keyword? core-keyword?
@@ -83,6 +86,18 @@
   "If key not nil, is value a boolean?"
   [k v props]
   (or (nil? k) (= v true) (= v false)))
+
+(defn double?
+  "If key not nil, is value a double?"
+  [k v props]
+  (or (nil? k) (= java.lang.Double (type v))))
+
+(defn float?
+  "If key not nil, is value a java.lang.Float?
+
+  Note: this is different from `clojure.core/float?`"
+  [k v props]
+  (or (nil? k) (= java.lang.Float (type v))))
 
 (defn integer?
   "If key not nil, is value an integer?"
@@ -167,6 +182,14 @@
 (def boolean
   {:validator boolean?
    :error "value must be a boolean"})
+
+(def float
+  {:validator float?
+   :error "value must be a float"})
+
+(def double
+  {:validator double?
+   :error "value must be a double"})
 
 (def keyword
   {:validator keyword?

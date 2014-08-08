@@ -76,6 +76,33 @@
          :a false true
          :a true  true)))
 
+(deftest double?-test
+  (testing "double?"
+    (are [k v e] (= (v/double? k v {}) e)
+         nil nil   true
+         :a  nil   false
+         :a  false false
+         :a  "3"   false
+         :a  9.9   true
+         :a  -1    false
+         :a  -1.0  true
+         :a  42    false
+         :a  42.3  true)))
+
+(deftest float?-test
+  (testing "float?"
+    (are [k v e] (= (v/float? k v {}) e)
+         nil nil         true
+         :a  nil         false
+         :a  false       false
+         :a  "3"         false
+         :a  9.9         false
+         :a  (float 9.9) true
+         :a  -1          false
+         :a  (float -1)  true
+         :a  42          false
+         :a  (float 42)  true)))
+
 (deftest integer?-test
   (testing "integer?"
     (are [k v e] (= (v/integer? k v {}) e)
