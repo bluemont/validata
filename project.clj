@@ -1,4 +1,4 @@
-(defproject validata "0.1.7-SNAPSHOT"
+(defproject validata "0.1.7"
   :description "Simple data validation for Clojure."
   :url "https://github.com/bluemont/validata"
   :license {:name "Eclipse Public License"

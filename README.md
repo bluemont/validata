@@ -22,7 +22,7 @@ Usage
 Add this to your `project.clj` dependencies:
 
 ```clojure
-[validata "0.1.5"]
+[validata "0.1.7"]
 ```
 
 Here is an example:
